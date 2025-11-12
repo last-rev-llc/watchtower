@@ -555,6 +555,14 @@ const config = {
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
+## Publishing
+
+For maintainers publishing new versions, see [PUBLISHING.md](./PUBLISHING.md) for the complete publishing workflow including:
+- Beta vs stable releases
+- Security checklist
+- Version management with changesets
+- Dry run verification
+
 ## Support
 
 For support and questions:
