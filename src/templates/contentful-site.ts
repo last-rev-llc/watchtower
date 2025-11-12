@@ -126,7 +126,7 @@ export function contentfulSiteTemplate(config: ContentfulSiteConfig = {}): Runne
 
   return {
     checks,
-    budgetMs: config.performance?.budgetMs || 8000,
+    budgetMs: config.performance?.budgetMs || 20000,
     cacheMs: config.performance?.cacheMs || 30000,
     aggregationPrecedence: ['Down', 'Partial', 'Unknown', 'Up'],
     auth: config.security?.auth,

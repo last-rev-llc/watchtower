@@ -13,7 +13,7 @@ import {
 
 const config: RunnerConfig = {
   // Performance settings
-  budgetMs: 8000,
+  budgetMs: 20000,
   cacheMs: 30000,
   aggregationPrecedence: ['Down', 'Partial', 'Unknown', 'Up'],
 

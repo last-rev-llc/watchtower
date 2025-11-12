@@ -13,7 +13,7 @@ import {
 
 const config: RunnerConfig = {
   // Performance settings
-  budgetMs: 8000, // 8 second timeout for comprehensive checks
+  budgetMs: 20000, // 8 second timeout for comprehensive checks
   cacheMs: 30000, // 30 second cache for development
   aggregationPrecedence: ['Down', 'Partial', 'Unknown', 'Up'],
 

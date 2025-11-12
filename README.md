@@ -58,7 +58,7 @@ import {
 } from '@last-rev/watchtower';
 
 const config: RunnerConfig = {
-  budgetMs: 8000,
+  budgetMs: 20000,
   cacheMs: 30000,
   auth: {
     token: process.env.HEALTHCHECK_TOKEN,
@@ -337,7 +337,7 @@ Configure performance constraints to ensure healthchecks don't impact your appli
 
 ```typescript
 const config = {
-  budgetMs: 8000,    // Global timeout (8 seconds for comprehensive checks)
+  budgetMs: 20000,    // Global timeout (8 seconds for comprehensive checks)
   cacheMs: 30000,    // Cache results for 30 seconds (balance between freshness and performance)
   aggregationPrecedence: ['Down', 'Partial', 'Unknown', 'Up'],
 };
