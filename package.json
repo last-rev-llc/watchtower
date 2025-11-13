@@ -14,7 +14,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/last-rev-llc/watchtower.git"
+    "url": "git+https://github.com/last-rev-llc/watchtower.git"
   },
   "homepage": "https://github.com/last-rev-llc/watchtower#readme",
   "bugs": {
