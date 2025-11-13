@@ -177,6 +177,10 @@ export function generateTestPage(healthcheckEndpoint: string): string {
       border: 1px solid #f5c6cb;
     }
 
+    .error-label {
+      font-weight: 600;
+    }
+
     .result-container {
       background: #f8f9fa;
       border-radius: 8px;
@@ -299,8 +303,16 @@ export function generateTestPage(healthcheckEndpoint: string): string {
 
       if (!token) {
         errorDiv.style.display = 'block';
-        errorDiv.innerHTML = '<strong>Error:</strong> Please enter your authentication token';
         errorDiv.className = 'error';
+        // Clear any previous content
+        errorDiv.textContent = '';
+        // Create label with bold styling
+        const label = document.createElement('span');
+        label.className = 'error-label';
+        label.textContent = 'Error: ';
+        errorDiv.appendChild(label);
+        // Add error message (safely escaped via textContent)
+        errorDiv.appendChild(document.createTextNode('Please enter your authentication token'));
         return;
       }
 
@@ -327,8 +339,16 @@ export function generateTestPage(healthcheckEndpoint: string): string {
         if (!response.ok) {
           // Handle error response
           errorDiv.style.display = 'block';
-          errorDiv.innerHTML = \`<strong>Error \${response.status}:</strong> \${data.error || 'Unauthorized'}\`;
           errorDiv.className = 'error';
+          // Clear any previous content
+          errorDiv.textContent = '';
+          // Create label with bold styling
+          const label = document.createElement('span');
+          label.className = 'error-label';
+          label.textContent = \`Error \${response.status}: \`;
+          errorDiv.appendChild(label);
+          // Add error message (safely escaped via textContent)
+          errorDiv.appendChild(document.createTextNode(data.error || 'Unauthorized'));
           return;
         }
 
@@ -337,7 +357,9 @@ export function generateTestPage(healthcheckEndpoint: string): string {
         const status = data.status || 'Unknown';
         
         statusBadge.textContent = status;
-        statusBadge.className = \`status-badge status-\${status.toLowerCase()}\`;
+        // Sanitize status for CSS class name (only allow alphanumeric, hyphen, underscore)
+        const sanitizedStatus = String(status).toLowerCase().replace(/[^a-z0-9_-]/g, '') || 'unknown';
+        statusBadge.className = \`status-badge status-\${sanitizedStatus}\`;
 
         document.getElementById('result').textContent = JSON.stringify(data, null, 2);
         document.getElementById('timestamp').textContent = \`Last checked: \${new Date().toLocaleString()}\`;
@@ -347,8 +369,16 @@ export function generateTestPage(healthcheckEndpoint: string): string {
         loading.style.display = 'none';
         checkBtn.disabled = false;
         errorDiv.style.display = 'block';
-        errorDiv.innerHTML = \`<strong>Error:</strong> \${error.message}\`;
         errorDiv.className = 'error';
+        // Clear any previous content
+        errorDiv.textContent = '';
+        // Create label with bold styling
+        const label = document.createElement('span');
+        label.className = 'error-label';
+        label.textContent = 'Error: ';
+        errorDiv.appendChild(label);
+        // Add error message (safely escaped via textContent)
+        errorDiv.appendChild(document.createTextNode((error as Error)?.message || 'Unknown error'));
       }
     }
 
@@ -362,4 +392,3 @@ export function generateTestPage(healthcheckEndpoint: string): string {
 </body>
 </html>`;
 }
-
