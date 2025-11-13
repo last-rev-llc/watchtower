@@ -1,0 +1,75 @@
+{
+  "name": "@last-rev/watchtower",
+  "version": "0.4.0",
+  "private": false,
+  "description": "A unified healthcheck and status toolkit for web applications — Watchtower keeps a vigilant eye on your site's heartbeat, ensuring every critical path and service stays up.",
+  "keywords": [
+    "healthcheck",
+    "monitoring",
+    "status",
+    "uptime",
+    "observability",
+    "last-rev"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/last-rev-llc/watchtower.git"
+  },
+  "homepage": "https://github.com/last-rev-llc/watchtower#readme",
+  "bugs": {
+    "url": "https://github.com/last-rev-llc/watchtower/issues"
+  },
+  "main": "dist/index.cjs",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./next": {
+      "types": "./dist/adapters/next.d.ts",
+      "import": "./dist/adapters/next.js",
+      "require": "./dist/adapters/next.cjs"
+    }
+  },
+  "sideEffects": false,
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "lint": "eslint . --ext .ts",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "changeset": "changeset",
+    "version-packages": "changeset version && pnpm i --lockfile-only",
+    "release": "changeset publish",
+    "prepublishOnly": "pnpm build",
+    "publish:beta": "pnpm build && npm publish --tag beta",
+    "publish:stable": "pnpm build && npm publish",
+    "publish:dry-run": "pnpm build && npm publish --dry-run",
+    "version:beta": "changeset version --snapshot beta",
+    "version:stable": "changeset version"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.30",
+    "eslint": "^9.12.0",
+    "typescript": "^5.6.3",
+    "tsup": "^8.1.0",
+    "vitest": "^2.1.0",
+    "@changesets/cli": "^2.27.8"
+  },
+  "peerDependencies": {
+    "algoliasearch": "^5.0.0",
+    "next": "^12.0.0 || ^13.0.0 || ^14.0.0 || ^15.0.0"
+  },
+  "peerDependenciesMeta": {
+    "next": {
+      "optional": true
+    }
+  }
+}
