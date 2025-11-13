@@ -64,11 +64,70 @@ export interface RunnerConfig {
 
 /**
  * Authentication configuration
+ *
+ * Simple token-based authentication to protect healthcheck endpoints.
+ *
+ * Security defaults:
+ * - In production: auth is REQUIRED (requireAuth defaults to true)
+ * - Query parameter tokens are DISABLED by default (allowQueryToken defaults to false)
+ * - Strict mode is ENABLED in production (minimal error responses)
+ *
+ * Token can be provided via:
+ * - Authorization header: `Authorization: Bearer <token>` (recommended)
+ * - Custom header: `X-Healthcheck-Token: <token>`
+ * - Query parameter: `?token=<token>` (if allowQueryToken is enabled)
  */
 export interface AuthConfig {
+  /**
+   * Required authentication token.
+   * In production, if token is not provided, access will be denied.
+   *
+   * @example
+   * token: process.env.HEALTHCHECK_TOKEN
+   */
   token?: string;
-  allowMonitoring?: boolean;
+
+  /**
+   * Require authentication. Defaults to true in production environments.
+   * If false, allows unauthenticated access (not recommended for production).
+   */
+  requireAuth?: boolean;
+
+  /**
+   * Allow query parameter tokens (e.g., ?token=xxx).
+   * Defaults to false for security (query params can appear in logs).
+   * Use headers instead when possible.
+   */
+  allowQueryToken?: boolean;
+
+  /**
+   * Strict mode: return minimal error responses to prevent information leakage.
+   * Defaults to true in production environments.
+   * When true, auth failures return only { "error": "Unauthorized" }
+   */
+  strictMode?: boolean;
+
+  /**
+   * Custom validation function. Takes precedence over token validation.
+   * Should return true if request is authorized, false otherwise.
+   *
+   * @example
+   * customValidator: (req) => {
+   *   return req.headers['x-internal-token'] === process.env.INTERNAL_TOKEN;
+   * }
+   */
   customValidator?: (req: unknown) => boolean;
+
+  /**
+   * Optional callback for auth failures (useful for logging/alerting).
+   * Receives the request object and failure reason.
+   *
+   * @example
+   * onAuthFailure: (req, reason) => {
+   *   console.warn('Healthcheck auth failed:', reason);
+   * }
+   */
+  onAuthFailure?: (req: unknown, reason: string) => void;
 }
 
 /**
@@ -166,4 +225,3 @@ export interface AlgoliaSearchResult {
   hits: unknown[];
   facets?: Record<string, Record<string, number>>;
 }
-

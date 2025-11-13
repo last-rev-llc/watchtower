@@ -42,7 +42,9 @@ interface ContentfulSiteConfig {
   security?: {
     auth?: {
       token?: string;
-      allowMonitoring?: boolean;
+      requireAuth?: boolean;
+      allowQueryToken?: boolean;
+      strictMode?: boolean;
     };
     sanitize?: 'none' | 'redact-values' | 'counts-only';
   };

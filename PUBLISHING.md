@@ -218,8 +218,8 @@ pnpm run publish:dry-run
 # 4. Publish
 pnpm run publish:beta
 
-# 5. Test in smartnews
-cd /Users/cameron/repos/smartnews/apps/web
+# 5. Test in example project
+cd /path/to/your/project
 # Update package.json: "@last-rev/watchtower": "0.2.0-beta.0"
 pnpm install
 ```
@@ -240,8 +240,8 @@ pnpm run publish:dry-run
 # 4. Publish
 pnpm run publish:stable
 
-# 5. Test in smartnews
-cd /Users/cameron/repos/smartnews/apps/web
+# 5. Test in example project
+cd /path/to/your/project
 # Update package.json: "@last-rev/watchtower": "^1.0.0"
 pnpm install
 ```

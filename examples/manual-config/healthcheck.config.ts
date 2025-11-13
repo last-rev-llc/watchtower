@@ -18,9 +18,15 @@ const config: RunnerConfig = {
   aggregationPrecedence: ['Down', 'Partial', 'Unknown', 'Up'],
 
   // Security settings
+  // Token-based authentication protects the endpoint from unauthorized access
+  // In production, auth is required by default
   auth: {
-    token: process.env.HEALTHCHECK_TOKEN,
-    allowMonitoring: true
+    token: process.env.HEALTHCHECK_TOKEN
+    // Query params disabled by default (use headers instead for better security)
+    // To enable query params for browser testing: allowQueryToken: true
+    // allowQueryToken: false,
+    // Strict mode enabled in production (minimal error responses)
+    // strictMode: true,
   },
   sanitize: process.env.NODE_ENV === 'production' ? 'counts-only' : 'none',
 

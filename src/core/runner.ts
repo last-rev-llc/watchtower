@@ -3,11 +3,16 @@ import type {
   RunnerConfig,
   HealthCheckResponse,
   StatusNode,
-  PerformanceMetrics,
+  PerformanceMetrics
 } from './types';
-import { aggregateStatus, getStatusMessage, getSiteDisplayName, getSiteHealthcheckId } from './aggregator';
+import {
+  aggregateStatus,
+  getStatusMessage,
+  getSiteDisplayName,
+  getSiteHealthcheckId
+} from './aggregator';
 import { sanitizeResponse } from './sanitizer';
-import { validateAuth, createUnauthorizedResponse } from './auth';
+import { validateAuth } from './auth';
 import cache from '../utils/cache';
 
 /**
@@ -20,29 +25,19 @@ export async function runHealthCheck(
   const startTime = Date.now();
 
   // Validate authentication
-  if (!validateAuth(req, config.auth)) {
-    const unauth = createUnauthorizedResponse();
-    return {
-      id: getSiteHealthcheckId(req),
-      name: getSiteDisplayName(req),
-      status: 'Unknown',
-      message: unauth.body.message,
-      timestamp: Date.now(),
-      performance: {
-        totalCheckTime: Date.now() - startTime,
-        checksCompleted: 0,
-        checksFailed: 1,
-      },
-      services: [],
-    };
+  // Note: Auth failures should be handled at the adapter level to prevent information leakage
+  // This check is a safety net, but adapters should check auth before calling runHealthCheck
+  const authResult = validateAuth(req, config.auth);
+  if (!authResult.authorized) {
+    // Should never reach here (adapter should handle it)
+    // But if we do, throw an error that adapters can catch
+    throw new Error('UNAUTHORIZED');
   }
 
   const { checks, budgetMs = 5000, cacheMs = 0, aggregationPrecedence } = config;
 
   // Run all checks in parallel with timeout protection
-  const checkPromises = checks.map((check) =>
-    runCheckWithTimeout(check, cacheMs, check.id)
-  );
+  const checkPromises = checks.map((check) => runCheckWithTimeout(check, cacheMs, check.id));
 
   // Global budget enforcement
   const resultsPromise = Promise.allSettled(checkPromises);
@@ -50,7 +45,7 @@ export async function runHealthCheck(
 
   const result = await Promise.race([
     resultsPromise.then((r) => ({ type: 'completed' as const, results: r })),
-    budgetPromise.then(() => ({ type: 'timeout' as const })),
+    budgetPromise.then(() => ({ type: 'timeout' as const }))
   ]);
 
   let services: StatusNode[];
@@ -65,8 +60,8 @@ export async function runHealthCheck(
         name: 'Budget Exceeded',
         status: 'Partial',
         message: `Health check exceeded ${budgetMs}ms budget`,
-        timestamp: Date.now(),
-      },
+        timestamp: Date.now()
+      }
     ];
     checksFailed = checks.length;
   } else {
@@ -85,7 +80,7 @@ export async function runHealthCheck(
           name: checks[idx].name,
           status: 'Unknown' as const,
           message: `Check failed: ${(res.reason as Error)?.message || 'Unknown error'}`,
-          timestamp: Date.now(),
+          timestamp: Date.now()
         };
       }
     });
@@ -96,7 +91,7 @@ export async function runHealthCheck(
   const performance: PerformanceMetrics = {
     totalCheckTime,
     checksCompleted,
-    checksFailed,
+    checksFailed
   };
 
   // Aggregate status
@@ -111,7 +106,7 @@ export async function runHealthCheck(
     message: overallMessage,
     timestamp: Date.now(),
     performance,
-    services,
+    services
   };
 
   // Apply sanitization
@@ -151,7 +146,7 @@ async function runCheckWithTimeout(
       name: check.name,
       status: 'Unknown',
       message: `Check error: ${(error as Error)?.message || 'Unknown error'}`,
-      timestamp: Date.now(),
+      timestamp: Date.now()
     };
   }
 }
@@ -174,4 +169,3 @@ export async function withTimeout<T>(
   const timeoutPromise = createTimeout(timeoutMs).then(() => timeoutValue);
   return Promise.race([promise, timeoutPromise]);
 }
-

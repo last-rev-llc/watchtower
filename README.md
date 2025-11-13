@@ -61,8 +61,9 @@ const config: RunnerConfig = {
   budgetMs: 20000,
   cacheMs: 30000,
   auth: {
-    token: process.env.HEALTHCHECK_TOKEN,
-    allowMonitoring: true
+    token: process.env.HEALTHCHECK_TOKEN
+    // In production, auth is required by default
+    // Query params disabled by default (use headers for better security)
   },
   sanitize: process.env.NODE_ENV === 'production' ? 'counts-only' : 'none',
   
@@ -295,21 +296,38 @@ export default minimalTemplate();
 
 ### Authentication
 
-Secure your healthcheck endpoints with token-based authentication.
+Secure your healthcheck endpoints with token-based authentication. In production, authentication is **required by default** to prevent information leakage.
 
 ```typescript
 const config = {
   // ... checks
   auth: {
     token: process.env.HEALTHCHECK_TOKEN,
-    allowMonitoring: true, // Allow monitoring services like Datadog, UptimeRobot
+    // In production, auth is required by default
+    // Query params disabled by default (use headers for better security)
+    // allowQueryToken: false, // Enable for browser testing (not recommended for production)
+    // strictMode: true, // Minimal error responses (default: true in production)
     customValidator: (req) => {
-      // Custom validation logic
+      // Custom validation logic (takes precedence over token)
       return req.headers['x-internal-token'] === process.env.INTERNAL_TOKEN;
+    },
+    onAuthFailure: (req, reason) => {
+      // Optional callback for logging/alerting
+      console.warn('Healthcheck auth failed:', reason);
     },
   },
 };
 ```
+
+**Token can be provided via:**
+- `Authorization: Bearer <token>` header (recommended, works with monitoring tools)
+- `X-Healthcheck-Token: <token>` header
+- Query parameter `?token=<token>` (if `allowQueryToken: true` is enabled)
+
+**Security defaults:**
+- Production: Auth **required** by default
+- Query params: **Disabled** by default (can appear in logs)
+- Strict mode: **Enabled** in production (minimal error responses)
 
 ### Sanitization Strategies
 
@@ -557,11 +575,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Publishing
 
-For maintainers publishing new versions, see [PUBLISHING.md](./PUBLISHING.md) for the complete publishing workflow including:
-- Beta vs stable releases
-- Security checklist
-- Version management with changesets
-- Dry run verification
+For maintainers publishing new versions, see [PUBLISHING.md](./PUBLISHING.md) for the complete publishing workflow.
 
 ## Support
 

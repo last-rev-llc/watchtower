@@ -18,9 +18,14 @@ const config: RunnerConfig = {
   aggregationPrecedence: ['Down', 'Partial', 'Unknown', 'Up'],
 
   // Security settings
+  // Token-based authentication protects the endpoint from unauthorized access
+  // In production, auth is required by default
   auth: {
-    token: process.env.HEALTHCHECK_TOKEN,
-    allowMonitoring: true
+    token: process.env.HEALTHCHECK_TOKEN
+    // Query params disabled by default (use headers instead)
+    // allowQueryToken: false,
+    // Strict mode enabled in production (minimal error responses)
+    // strictMode: true,
   },
   sanitize: process.env.NODE_ENV === 'production' ? 'counts-only' : 'none',
 
@@ -75,9 +80,7 @@ const config: RunnerConfig = {
         { path: '/', name: 'Homepage' },
         { path: '/about', name: 'About' }
       ],
-      important: [
-        { path: '/blog', name: 'Blog Index' }
-      ],
+      important: [{ path: '/blog', name: 'Blog Index' }],
       timeout: process.env.NODE_ENV === 'production' ? 5000 : 10000,
       retries: process.env.NODE_ENV === 'production' ? 3 : 1
     }),

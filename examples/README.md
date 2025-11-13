@@ -131,10 +131,11 @@ For production, always configure authentication and sanitization:
 export default {
   // ... other config
   auth: {
-    token: process.env.HEALTHCHECK_TOKEN,
-    allowMonitoring: true
+    token: process.env.HEALTHCHECK_TOKEN
+    // In production, auth is required by default
+    // Query params disabled by default (use headers for better security)
   },
-  sanitize: 'counts-only'
+  sanitize: 'counts-only' // Prevents information leakage in production
 };
 ```
 
