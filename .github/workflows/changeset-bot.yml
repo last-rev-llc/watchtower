@@ -1,0 +1,39 @@
+name: Changeset Bot
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, closed]
+
+jobs:
+  changeset-bot:
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.draft == false
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Check for changesets
+        run: |
+          if [ -z "$(find .changeset -name '*.md' -not -name 'config.json' -type f)" ]; then
+            echo "❌ No changesets found!"
+            echo ""
+            echo "This PR requires a changeset. Please run:"
+            echo "  pnpm changeset add"
+            echo ""
+            echo "Or if this PR doesn't need a version bump, add a changeset with 'none' type."
+            exit 1
+          else
+            echo "✅ Changesets found"
+            find .changeset -name '*.md' -not -name 'config.json' -type f
+          fi
+
