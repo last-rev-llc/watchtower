@@ -15,7 +15,8 @@ Complete example for Next.js Pages Router with Contentful and Algolia integratio
 
 **Files:**
 - `healthcheck.config.ts` - Complete configuration
-- `pages/api/healthcheck.ts` - API route implementation
+- `pages/api/healthcheck/[[...slug]].ts` - Optional catch-all route (supports test page)
+- `pages/api/healthcheck.ts` - Simple route (alternative, no test page support)
 
 ### 2. Next.js App Router (`nextjs-app-router/`)
 Example for Next.js App Router (Next.js 13+).
@@ -27,7 +28,8 @@ Example for Next.js App Router (Next.js 13+).
 
 **Files:**
 - `healthcheck.config.ts` - Configuration
-- `app/api/healthcheck/route.ts` - App Router API implementation
+- `app/api/healthcheck/[[...slug]]/route.ts` - Optional catch-all route (supports test page)
+- `app/api/healthcheck/route.ts` - Simple route (alternative, no test page support)
 
 ### 3. Manual Configuration (`manual-config/`)
 Custom configuration example without using templates.
@@ -135,9 +137,24 @@ export default {
     // In production, auth is required by default
     // Query params disabled by default (use headers for better security)
   },
-  sanitize: 'counts-only' // Prevents information leakage in production
+  sanitize: 'counts-only', // Prevents information leakage in production
+  
+  // Enable test page for browser-based testing (development only recommended)
+  enableTestPage: process.env.NODE_ENV === 'development' ? true : false
 };
 ```
+
+### Test Page
+When `enableTestPage` is enabled, access the interactive test page at:
+- Default: `/api/healthcheck/test`
+- Custom: `/api/healthcheck/your-custom-path` (if `enableTestPage: '/your-custom-path'`)
+
+The test page provides:
+- Secure token input (sessionStorage, not localStorage)
+- Token sent via Authorization header (never in URL)
+- Beautiful UI with formatted JSON output
+- Token must be entered to run healthcheck (no bypass)
+- Token validated against HEALTHCHECK_TOKEN environment variable
 
 ## Testing
 

@@ -30,6 +30,11 @@ const config: RunnerConfig = {
   },
   sanitize: process.env.NODE_ENV === 'production' ? 'counts-only' : 'none',
 
+  // Enable interactive test page for browser-based testing
+  // Access at /api/healthcheck/test (or custom path if specified)
+  // Test page is secure: token stored in sessionStorage, sent via headers only
+  enableTestPage: process.env.NODE_ENV === 'development' ? true : false,
+
   // Health checks
   checks: [
     createBuildCheck({

@@ -60,6 +60,18 @@ export interface RunnerConfig {
   aggregationPrecedence?: Status[];
   auth?: AuthConfig;
   sanitize?: SanitizeStrategy;
+  /**
+   * Enable a test page for browser-based healthcheck testing.
+   * When enabled, accessing the endpoint with '/test' suffix will serve an interactive test page.
+   *
+   * @example
+   * // If endpoint is /api/healthcheck, test page will be at /api/healthcheck/test
+   * enableTestPage: true
+   *
+   * // Custom test page path
+   * enableTestPage: '/test-page'
+   */
+  enableTestPage?: boolean | string;
 }
 
 /**

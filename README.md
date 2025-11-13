@@ -100,13 +100,27 @@ export default config;
 
 2. **Create your API route:**
 
+**For Pages Router:**
 ```typescript
-// pages/api/healthcheck.ts
+// pages/api/healthcheck/[[...slug]].ts (optional catch-all route for test page support)
+// OR pages/api/healthcheck.ts (simple route, no test page)
 import { createNextHandler } from '@last-rev/watchtower';
-import config from '../../healthcheck.config';
+import config from '../../../healthcheck.config';
 
 export default createNextHandler(config);
 ```
+
+**For App Router:**
+```typescript
+// app/api/healthcheck/[[...slug]]/route.ts (optional catch-all route for test page support)
+// OR app/api/healthcheck/route.ts (simple route, no test page)
+import { createNextHandler } from '@last-rev/watchtower';
+import config from '../../../../healthcheck.config';
+
+export const GET = createNextHandler(config);
+```
+
+**Note:** Use an optional catch-all route (`[[...slug]]` with double brackets) if you want to enable the test page feature. This allows the route to match both `/api/healthcheck` (base path) and `/api/healthcheck/test` (test page). A regular catch-all route (`[...slug]`) won't match the base path. If you don't need the test page, a simple route file works fine.
 
 3. **Test your healthcheck:**
 
@@ -116,6 +130,10 @@ curl http://localhost:3000/api/healthcheck
 
 # Production (with authentication)
 curl -H "Authorization: Bearer YOUR_TOKEN" https://example.com/api/healthcheck
+
+# Browser testing (if enableTestPage is enabled)
+# Visit: http://localhost:3000/api/healthcheck/test
+# Enter your token in the secure test page interface
 ```
 
 ### Using Templates (Alternative Approach)
@@ -329,6 +347,36 @@ const config = {
 - Query params: **Disabled** by default (can appear in logs)
 - Strict mode: **Enabled** in production (minimal error responses)
 
+### Test Page
+
+Enable an interactive browser-based test page for manual healthcheck testing:
+
+```typescript
+const config = {
+  // ... checks
+  enableTestPage: true,  // Access at /api/healthcheck/test
+  // Or custom path:
+  // enableTestPage: '/test-page',  // Access at /api/healthcheck/test-page
+  auth: {
+    token: process.env.HEALTHCHECK_TOKEN
+  }
+};
+```
+
+**Features:**
+- Secure token input (stored in sessionStorage, not localStorage)
+- Token sent via `Authorization` header (never in URL)
+- Beautiful, responsive UI with formatted JSON output
+- Status badges and error handling
+- Token must be entered to run healthcheck (no bypass)
+
+**Security:**
+- Test page prompts for token - cannot run checks without it
+- Token validated against `HEALTHCHECK_TOKEN` environment variable
+- Token never appears in URL or browser history
+- Token cleared when browser tab closes (sessionStorage)
+- Healthcheck endpoint still requires authentication (same token validation)
+
 ### Sanitization Strategies
 
 Control what information is exposed in healthcheck responses:
@@ -491,7 +539,8 @@ export function createCustomCheck(): Check {
 
 #### Next.js (Pages Router)
 ```typescript
-// pages/api/healthcheck.ts
+// pages/api/healthcheck/[[...slug]].ts (optional catch-all for test page support)
+// OR pages/api/healthcheck.ts (simple route)
 import { createNextHandler } from '@last-rev/watchtower';
 
 export default createNextHandler(config);
@@ -499,7 +548,8 @@ export default createNextHandler(config);
 
 #### Next.js (App Router)
 ```typescript
-// app/api/healthcheck/route.ts
+// app/api/healthcheck/[[...slug]]/route.ts (optional catch-all for test page support)
+// OR app/api/healthcheck/route.ts (simple route)
 import { createNextHandler } from '@last-rev/watchtower';
 
 export const GET = createNextHandler(config);
