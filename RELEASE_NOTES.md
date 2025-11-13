@@ -1,4 +1,4 @@
-# Release Notes - v0.3.0
+# Release Notes - v0.4.0
 
 ## 🔒 Security Release
 
