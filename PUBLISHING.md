@@ -116,7 +116,7 @@ pnpm publish:stable
    ```bash
    npm login
    # Follow prompts (credentials stored in ~/.npmrc, NOT in repo)
-   ```
+```
 
 ## 🔍 Pre-Publish Checklist
 
