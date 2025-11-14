@@ -1,5 +1,15 @@
 # @last-rev/watchtower
 
+## 0.4.2
+
+### Patch Changes
+
+- 33a0521: - Fix esbuild vulnerability by updating vitest from 2.1.9 to 4.0.9 (uses vite 7.2.2 with esbuild 0.27.0)
+  - Add Next.js 16 support to peer dependencies
+  - Fix GitHub Actions workflow: move GitHub CLI installation after changesets check
+  - Make workflow branch creation retryable with force-with-lease for safer pushes
+- 615bcc0: Fix test page button and Enter key functionality by removing TypeScript syntax from inline JavaScript that was causing "Unexpected identifier" error in browser console.
+
 ## 0.4.1
 
 ### Patch Changes
