@@ -43,16 +43,6 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Install GitHub CLI
-        if: steps.changesets.outputs.has_changesets == 'true' && steps.skip_check.outputs.skip == 'false'
-        run: |
-          type -p curl >/dev/null || (apt update && apt install curl -y)
-          curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg \
-          && chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg \
-          && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | tee /etc/apt/sources.list.d/github-cli.list > /dev/null \
-          && apt update \
-          && apt install gh -y
-
       - name: Check for changesets
         id: changesets
         run: |
@@ -63,6 +53,16 @@ jobs:
             echo "has_changesets=false" >> $GITHUB_OUTPUT
             echo "No changesets found, skipping version/publish"
           fi
+
+      - name: Install GitHub CLI
+        if: steps.changesets.outputs.has_changesets == 'true' && steps.skip_check.outputs.skip == 'false'
+        run: |
+          type -p curl >/dev/null || (apt update && apt install curl -y)
+          curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg \
+          && chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg \
+          && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | tee /etc/apt/sources.list.d/github-cli.list > /dev/null \
+          && apt update \
+          && apt install gh -y
 
       - name: Version packages
         if: steps.changesets.outputs.has_changesets == 'true' && steps.skip_check.outputs.skip == 'false'
@@ -90,9 +90,21 @@ jobs:
             echo "No changes to commit"
           else
             BRANCH_NAME="chore/version-v${{ steps.version.outputs.version }}"
-            git checkout -b "$BRANCH_NAME"
+            # Ensure we're on main and up to date
+            git checkout main
+            git pull origin main
+            # Check if branch exists remotely, handle retry scenario
+            if git ls-remote --heads origin "$BRANCH_NAME" | grep -q "$BRANCH_NAME"; then
+              echo "Branch exists remotely, fetching and resetting to main"
+              git fetch origin "$BRANCH_NAME"
+              git checkout -b "$BRANCH_NAME" origin/"$BRANCH_NAME" 2>/dev/null || git checkout "$BRANCH_NAME"
+              git reset --hard origin/main
+            else
+              echo "Creating new branch"
+              git checkout -b "$BRANCH_NAME"
+            fi
             git commit -m "Version packages for release v${{ steps.version.outputs.version }}"
-            git push origin "$BRANCH_NAME"
+            git push origin "$BRANCH_NAME" --force-with-lease
             
             # Create PR using GitHub CLI
             PR_BODY="Automated version bump for release v${{ steps.version.outputs.version }}\n\nThis PR was automatically created by the version-and-publish workflow.\n\nChanges:\n- Updated package.json version\n- Updated CHANGELOG.md\n- Updated lockfile\n\nOnce merged, the release tag and GitHub release will be created."
