@@ -12,7 +12,7 @@ jobs:
   sync:
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -32,29 +32,24 @@ jobs:
           echo "Description: $DESCRIPTION"
           echo "Keywords: $KEYWORDS"
 
-      - name: Update repository description
-        uses: peter-evans/repository-dispatch@v3
+      - name: Update repository metadata
+        uses: actions/github-script@v7
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          repository: ${{ github.repository }}
-          event-type: update-description
-          client-payload: |
-            {
-              "description": "${{ steps.metadata.outputs.description }}",
-              "topics": "${{ steps.metadata.outputs.keywords }}"
-            }
-
-      - name: Update repository topics (via API)
-        run: |
-          # Note: This requires a personal access token with repo scope
-          # For now, we'll just log what should be updated
-          echo "Repository description should be: ${{ steps.metadata.outputs.description }}"
-          echo "Repository topics should be: ${{ steps.metadata.outputs.keywords }}"
-          echo ""
-          echo "To update manually:"
-          echo "1. Go to https://github.com/${{ github.repository }}/settings"
-          echo "2. Update description and topics"
-          echo ""
-          echo "Or use GitHub CLI:"
-          echo "gh repo edit ${{ github.repository }} --description \"${{ steps.metadata.outputs.description }}\" --add-topic ${{ steps.metadata.outputs.keywords }}"
+          script: |
+            const description = '${{ steps.metadata.outputs.description }}';
+            const topics = '${{ steps.metadata.outputs.keywords }}'.split(',').filter(t => t.trim());
+            
+            await github.rest.repos.update({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              description: description,
+            });
+            
+            await github.rest.repos.replaceAllTopics({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              names: topics,
+            });
+            
+            console.log(`Updated repository description and topics`);
 
