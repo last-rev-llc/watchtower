@@ -12,8 +12,7 @@ jobs:
   sync:
     runs-on: ubuntu-latest
     permissions:
-      contents: write
-      metadata: write
+      contents: read
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
