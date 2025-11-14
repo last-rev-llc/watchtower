@@ -1,5 +1,11 @@
 # @last-rev/watchtower
 
+## 0.4.2
+
+### Patch Changes
+
+- 615bcc0: Fix test page button and Enter key functionality by removing TypeScript syntax from inline JavaScript that was causing "Unexpected identifier" error in browser console.
+
 ## 0.4.1
 
 ### Patch Changes
