@@ -226,6 +226,9 @@ export function generateTestPage(healthcheckEndpoint: string): string {
         Authentication Token
       </label>
       <div class="token-input-group">
+        <!-- Chrome logs a console warning when a password input is outside a form.
+             This page intentionally avoids wrapping the field in a form so we can manage
+             submission entirely via JavaScript without accidental form posts. -->
         <input 
           type="password" 
           id="token" 
@@ -377,8 +380,14 @@ export function generateTestPage(healthcheckEndpoint: string): string {
         label.className = 'error-label';
         label.textContent = 'Error: ';
         errorDiv.appendChild(label);
-        // Add error message (safely escaped via textContent)
-        errorDiv.appendChild(document.createTextNode((error as Error)?.message || 'Unknown error'));
+        // Determine safe error message without using TS-specific syntax
+        const errorMessage =
+          error instanceof Error
+            ? error.message
+            : typeof error === 'string'
+            ? error
+            : 'Unknown error';
+        errorDiv.appendChild(document.createTextNode(errorMessage));
       }
     }
 
