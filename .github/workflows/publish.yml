@@ -107,7 +107,7 @@ jobs:
             git push origin "$BRANCH_NAME" --force-with-lease
             
             # Create PR using GitHub CLI
-            PR_BODY="Automated version bump for release v${{ steps.version.outputs.version }}\n\nThis PR was automatically created by the version-and-publish workflow.\n\nChanges:\n- Updated package.json version\n- Updated CHANGELOG.md\n- Updated lockfile\n\nOnce merged, the release tag and GitHub release will be created."
+            PR_BODY="Automated version bump for release v${{ steps.version.outputs.version }}\n\nThis PR was automatically created by the version-and-publish workflow.\n\nChanges:\n- Updated package.json version\n- Updated CHANGELOG.md\n- Updated lockfile\n\nOnce merged, the release tag will be created automatically and the release.yml workflow will create the GitHub release."
             echo -e "$PR_BODY" > /tmp/pr_body.txt
             gh pr create \
               --title "Version packages for release v${{ steps.version.outputs.version }}" \
@@ -119,40 +119,5 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Create git tag
-        if: steps.changesets.outputs.has_changesets == 'true' && steps.skip_check.outputs.skip == 'false'
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          # Tag from the version branch (tags are global, so this works even before PR merge)
-          BRANCH_NAME="chore/version-v${{ steps.version.outputs.version }}"
-          git checkout "$BRANCH_NAME" || git checkout -b "$BRANCH_NAME"
-          git tag -a "v${{ steps.version.outputs.version }}" -m "Release v${{ steps.version.outputs.version }}"
-          git push origin "v${{ steps.version.outputs.version }}"
-
-      - name: Extract release notes
-        if: steps.changesets.outputs.has_changesets == 'true' && steps.skip_check.outputs.skip == 'false'
-        id: release_notes
-        run: |
-          VERSION="${{ steps.version.outputs.version }}"
-          # Extract release notes from CHANGELOG
-          awk "/^## $VERSION/,/^## /" CHANGELOG.md | sed '$d' > release_notes.md
-          if [ ! -s release_notes.md ]; then
-            echo "## Release v$VERSION" > release_notes.md
-            echo "" >> release_notes.md
-            echo "See [CHANGELOG.md](https://github.com/${{ github.repository }}/blob/main/CHANGELOG.md) for details." >> release_notes.md
-          fi
-          sed -i '1d' release_notes.md || sed -i '' '1d' release_notes.md
-          sed -i '/^## $/d' release_notes.md || sed -i '' '/^## $/d' release_notes.md
-
-      - name: Create GitHub Release
-        if: steps.changesets.outputs.has_changesets == 'true' && steps.skip_check.outputs.skip == 'false'
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: v${{ steps.version.outputs.version }}
-          name: Release v${{ steps.version.outputs.version }}
-          body_path: release_notes.md
-          draft: false
-          prerelease: false
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # Note: Tag and release creation is handled by release.yml workflow
+      # which triggers when the version PR is merged and tag is pushed

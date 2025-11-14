@@ -64,11 +64,13 @@ git push
 # 5. GitHub Actions automatically:
 #    ✅ Versions package (updates package.json)
 #    ✅ Updates CHANGELOG.md
-#    ✅ Commits version changes
-#    ✅ Creates git tag (v0.5.0)
-#    ✅ Creates GitHub release
+#    ✅ Creates version PR (chore/version-v0.5.0)
 
-# 6. Manually publish to npm when ready
+# 6. Merge the version PR
+#    ✅ Creates git tag (v0.5.0) automatically
+#    ✅ Creates GitHub release automatically
+
+# 7. Manually publish to npm when ready
 pnpm publish:stable
 ```
 
@@ -197,9 +199,11 @@ When you merge a PR with changesets to `main`, the GitHub Actions workflow autom
 - Updates `package.json` version
 - Updates `CHANGELOG.md` with your changeset content
 - Removes the consumed changeset files
-- Commits these changes
-- Creates a git tag
-- Creates a GitHub release
+- Creates a version PR (`chore/version-vX.Y.Z`)
+
+When you merge the version PR:
+- `create-tag.yml` workflow creates the git tag
+- `release.yml` workflow creates the GitHub release
 
 ### Manual Versioning (Alternative)
 
@@ -243,10 +247,14 @@ git push
 # GitHub Actions automatically:
 #   - Versions the package
 #   - Updates CHANGELOG.md
+#   - Creates version PR
+
+# 6. Merge the version PR
+# GitHub Actions automatically:
 #   - Creates git tag
 #   - Creates GitHub release
 
-# 6. Publish to npm when ready
+# 7. Publish to npm when ready
 pnpm publish:stable
 ```
 
@@ -285,15 +293,19 @@ npm install @last-rev/watchtower@beta
 
 ### GitHub Actions (Current Setup)
 We have automated workflows set up:
-- **Version and Release Workflow** (`.github/workflows/publish.yml`):
+- **Version Workflow** (`.github/workflows/publish.yml`):
   - Automatically versions packages when changesets are merged to main
   - Updates CHANGELOG.md automatically
-  - Creates git tags
-  - Creates GitHub releases
-  - **Note:** npm publishing is done manually (see below)
+  - Creates version PR for review
+- **Tag Creation** (`.github/workflows/create-tag.yml`):
+  - Automatically creates git tags when version PRs are merged
+- **Release Creation** (`.github/workflows/release.yml`):
+  - Automatically creates GitHub releases when tags are pushed
 - **Changeset Bot** (`.github/workflows/changeset-bot.yml`):
   - Enforces that PRs include changesets
   - Prevents merging without versioning information
+  - Automatically skips version PRs (they don't need changesets)
+- **Note:** npm publishing is done manually (see below)
 
 ### .gitignore Protection
 Already configured to ignore:
