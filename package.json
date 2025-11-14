@@ -56,11 +56,11 @@
     "version:stable": "changeset version"
   },
   "devDependencies": {
-    "@types/node": "^20.11.30",
+    "@types/node": "^24.10.1",
     "eslint": "^9.12.0",
     "typescript": "^5.6.3",
     "tsup": "^8.1.0",
-    "vitest": "^2.1.0",
+    "vitest": "^4.0.9",
     "@changesets/cli": "^2.27.8"
   },
   "peerDependencies": {
