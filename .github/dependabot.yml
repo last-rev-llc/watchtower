@@ -1,0 +1,26 @@
+version: 2
+updates:
+  # Enable version updates for npm
+  - package-ecosystem: 'npm'
+    directory: '/'
+    schedule:
+      interval: 'weekly'
+    open-pull-requests-limit: 10
+    labels:
+      - 'dependencies'
+      - 'automated'
+    commit-message:
+      prefix: 'chore'
+      include: 'scope'
+    # Group updates to reduce PR noise
+    groups:
+      dev-dependencies:
+        dependency-type: 'development'
+      production-dependencies:
+        dependency-type: 'production'
+    # Ignore major version updates for peer dependencies to avoid breaking changes
+    ignore:
+      - dependency-name: 'next'
+        update-types: ['version-update:semver-major']
+      - dependency-name: 'algoliasearch'
+        update-types: ['version-update:semver-major']
