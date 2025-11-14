@@ -38,7 +38,7 @@ yarn-error.log*
 # Uncomment the ones you don't want to commit:
 # package-lock.json
 # yarn.lock
-pnpm-lock.yaml
+# pnpm-lock.yaml  # Committed for reproducible CI builds
 
 # Optional caches
 .npm/

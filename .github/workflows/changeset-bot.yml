@@ -36,4 +36,3 @@ jobs:
             echo "✅ Changesets found"
             find .changeset -name '*.md' -not -name 'config.json' -type f
           fi
-
