@@ -1,5 +1,11 @@
 # @last-rev/watchtower
 
+## 0.4.5
+
+### Patch Changes
+
+- d105848: Enhance workflows: trigger release workflow on tag creation and add workflow_dispatch event to release.yml
+
 ## 0.4.4
 
 ### Patch Changes
