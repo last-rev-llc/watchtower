@@ -1,6 +1,6 @@
 {
   "name": "@last-rev/watchtower",
-  "version": "0.4.2",
+  "version": "0.4.3",
   "private": false,
   "description": "A unified healthcheck and status toolkit for web applications — Watchtower keeps a vigilant eye on your site's heartbeat, ensuring every critical path and service stays up.",
   "keywords": [
