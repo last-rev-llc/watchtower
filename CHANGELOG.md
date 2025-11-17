@@ -1,5 +1,11 @@
 # @last-rev/watchtower
 
+## 0.4.3
+
+### Patch Changes
+
+- b30c4c9: No changes from v0.4.2, testing Github workflows.
+
 ## 0.4.2
 
 ### Patch Changes
