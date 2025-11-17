@@ -1,0 +1,4 @@
+---
+---
+
+Updated CodeQL workflow configuration
