@@ -37,20 +37,20 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const description = '${{ steps.metadata.outputs.description }}';
-            const topics = '${{ steps.metadata.outputs.keywords }}'.split(',').filter(t => t.trim());
-            
+            const description = ${{ toJson(steps.metadata.outputs.description) }};
+            const keywordsCsv = ${{ toJson(steps.metadata.outputs.keywords) }};
+            const topics = keywordsCsv.split(',').filter(t => t.trim());
+
             await github.rest.repos.update({
               owner: context.repo.owner,
               repo: context.repo.repo,
               description: description,
             });
-            
+
             await github.rest.repos.replaceAllTopics({
               owner: context.repo.owner,
               repo: context.repo.repo,
               names: topics,
             });
-            
-            console.log(`Updated repository description and topics`);
 
+            console.log(`Updated repository description and topics`);
