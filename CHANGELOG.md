@@ -1,5 +1,11 @@
 # @last-rev/watchtower
 
+## 0.4.4
+
+### Patch Changes
+
+- a387871: fix: update sync-metadata workflow to use toJson for outputs
+
 ## 0.4.3
 
 ### Patch Changes
