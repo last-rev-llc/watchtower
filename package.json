@@ -56,12 +56,12 @@
     "version:stable": "changeset version"
   },
   "devDependencies": {
-    "@changesets/cli": "^2.29.7",
+    "@changesets/cli": "^2.29.8",
     "@types/node": "^24.10.1",
     "eslint": "^9.39.1",
     "tsup": "^8.5.1",
     "typescript": "^5.9.3",
-    "vitest": "^4.0.9"
+    "vitest": "^4.0.14"
   },
   "peerDependencies": {
     "algoliasearch": "^5.0.0",
@@ -70,6 +70,11 @@
   "peerDependenciesMeta": {
     "next": {
       "optional": true
+    }
+  },
+  "pnpm": {
+    "overrides": {
+      "glob@>=10.2.0 <10.5.0": ">=10.5.0"
     }
   }
 }
