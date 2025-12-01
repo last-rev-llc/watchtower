@@ -88,7 +88,12 @@ function getHealthcheckEndpoint(req: NextApiRequest, config: RunnerConfig): stri
   // Remove test path from URL to get base endpoint
   // e.g., /api/healthcheck/test -> /api/healthcheck
   let baseUrl = urlPath.replace(new RegExp(`/${normalizedTestPath}$`), '');
-  baseUrl = normalizePathSlashes(baseUrl);
+  
+  // Normalize trailing slashes but preserve leading slash for absolute paths
+  // Strip trailing slashes only
+  while (baseUrl.length > 1 && baseUrl.endsWith('/')) {
+    baseUrl = baseUrl.slice(0, -1);
+  }
 
   // If baseUrl is empty or just '/', use default
   if (!baseUrl || baseUrl === '/') {
