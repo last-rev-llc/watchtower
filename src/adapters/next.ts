@@ -10,6 +10,29 @@ import { validateAuth, createUnauthorizedResponse } from '../core/auth';
 import { generateTestPage } from './test-page';
 
 /**
+ * Safely removes leading and trailing slashes from a path
+ * This replaces the vulnerable regex /^\/+|\/+$/g which is susceptible to ReDoS attacks
+ * @param path - The path string to normalize
+ * @returns The path with leading and trailing slashes removed
+ */
+function normalizePathSlashes(path: string): string {
+  let start = 0;
+  let end = path.length;
+
+  // Remove leading slashes
+  while (start < end && path[start] === '/') {
+    start++;
+  }
+
+  // Remove trailing slashes
+  while (end > start && path[end - 1] === '/') {
+    end--;
+  }
+
+  return path.slice(start, end);
+}
+
+/**
  * Sets security headers on the response
  */
 function setSecurityHeaders(res: NextApiResponse, contentType: string = 'application/json'): void {
@@ -34,14 +57,14 @@ function isTestPageRequest(req: NextApiRequest, config: RunnerConfig): boolean {
   const slug = req.query.slug;
   if (Array.isArray(slug) && slug.length > 0) {
     const slugPath = slug.join('/');
-    const normalizedTestPath = testPath.replace(/^\/+|\/+$/g, '');
+    const normalizedTestPath = normalizePathSlashes(testPath);
     return slugPath === normalizedTestPath;
   }
 
   // Fallback: check URL path (for App Router or direct URL matching)
   const urlPath = req.url?.split('?')[0] || '';
-  const normalizedTestPath = testPath.replace(/^\/+|\/+$/g, '');
-  const normalizedUrlPath = urlPath.replace(/^\/+|\/+$/g, '');
+  const normalizedTestPath = normalizePathSlashes(testPath);
+  const normalizedUrlPath = normalizePathSlashes(urlPath);
 
   // Check if URL ends with test path (e.g., /api/healthcheck/test)
   return (
@@ -60,11 +83,12 @@ function getHealthcheckEndpoint(req: NextApiRequest, config: RunnerConfig): stri
   const urlPath = req.url?.split('?')[0] || '';
 
   // Normalize test path
-  const normalizedTestPath = testPath.replace(/^\/+|\/+$/g, '');
+  const normalizedTestPath = normalizePathSlashes(testPath);
 
   // Remove test path from URL to get base endpoint
   // e.g., /api/healthcheck/test -> /api/healthcheck
-  let baseUrl = urlPath.replace(new RegExp(`/${normalizedTestPath}$`), '').replace(/\/$/, '');
+  let baseUrl = urlPath.replace(new RegExp(`/${normalizedTestPath}$`), '');
+  baseUrl = normalizePathSlashes(baseUrl);
 
   // If baseUrl is empty or just '/', use default
   if (!baseUrl || baseUrl === '/') {
