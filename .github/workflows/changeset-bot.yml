@@ -4,6 +4,11 @@ on:
   pull_request:
     types: [opened, synchronize, reopened, closed]
 
+# Explicit permissions following principle of least privilege (fixes security alert #5)
+permissions:
+  contents: read
+  pull-requests: read
+
 jobs:
   changeset-bot:
     runs-on: ubuntu-latest
