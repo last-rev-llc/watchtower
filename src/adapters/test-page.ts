@@ -188,6 +188,10 @@ export function generateTestPage(healthcheckEndpoint: string): string {
       border: 1px solid #e9ecef;
     }
 
+    .result-container {
+      position: relative;
+    }
+
     pre {
       background: #282c34;
       color: #abb2bf;
@@ -197,6 +201,25 @@ export function generateTestPage(healthcheckEndpoint: string): string {
       font-size: 13px;
       line-height: 1.5;
       margin: 0;
+    }
+
+    .copy-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: rgba(255,255,255,0.1);
+      color: #abb2bf;
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 4px;
+      padding: 4px 10px;
+      font-size: 12px;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .copy-btn:hover {
+      background: rgba(255,255,255,0.2);
+      color: #fff;
     }
 
     .info {
@@ -251,6 +274,7 @@ export function generateTestPage(healthcheckEndpoint: string): string {
         <span id="statusBadge" class="status-badge"></span>
       </div>
       <div class="result-container">
+        <button class="copy-btn" onclick="copyResult()">📋 Copy</button>
         <pre id="result"></pre>
       </div>
       <p class="timestamp" id="timestamp"></p>
@@ -280,6 +304,27 @@ export function generateTestPage(healthcheckEndpoint: string): string {
         document.getElementById('token').type = 'password';
       }
     });
+
+    function copyResult() {
+      const text = document.getElementById('result').textContent;
+      const btn = document.querySelector('.copy-btn');
+      const onSuccess = () => {
+        btn.textContent = '✅ Copied!';
+        setTimeout(() => { btn.textContent = '📋 Copy'; }, 2000);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(onSuccess);
+      } else {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.cssText = 'position:fixed;opacity:0;pointer-events:none';
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        onSuccess();
+      }
+    }
 
     function toggleVisibility() {
       const input = document.getElementById('token');

@@ -98,10 +98,15 @@ export async function runHealthCheck(
   const overallStatus = aggregateStatus(services, aggregationPrecedence);
   const overallMessage = getStatusMessage(overallStatus);
 
-  // Build response
+  // Build response — use config.name override if provided, otherwise derive from request/env
+  const displayName = config.name ? `${config.name} Site Health` : getSiteDisplayName(req);
+  const id = config.name
+    ? `${config.name.toLowerCase().replace(/\s+/g, '_')}_healthcheck`
+    : getSiteHealthcheckId(req);
+
   const response: HealthCheckResponse = {
-    id: getSiteHealthcheckId(req),
-    name: getSiteDisplayName(req),
+    id,
+    name: displayName,
     status: overallStatus,
     message: overallMessage,
     timestamp: Date.now(),
