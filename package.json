@@ -56,14 +56,14 @@
     "version:stable": "changeset version"
   },
   "devDependencies": {
-    "@changesets/cli": "^2.29.8",
-    "@types/node": "^25.0.0",
-    "@typescript-eslint/eslint-plugin": "^8.49.0",
-    "@typescript-eslint/parser": "^8.49.0",
+    "@changesets/cli": "^2.30.0",
+    "@types/node": "^25.6.0",
+    "@typescript-eslint/eslint-plugin": "^8.58.2",
+    "@typescript-eslint/parser": "^8.58.2",
     "eslint": "^9.39.1",
     "tsup": "^8.5.1",
     "typescript": "^5.9.3",
-    "vitest": "^4.0.15"
+    "vitest": "^4.1.4"
   },
   "peerDependencies": {
     "algoliasearch": "^5.0.0",
