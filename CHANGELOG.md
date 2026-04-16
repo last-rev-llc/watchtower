@@ -1,5 +1,11 @@
 # @last-rev/watchtower
 
+## 1.1.2
+
+### Patch Changes
+
+- a8dee55: Add Datadog synthetics templates and reference sync script to `examples/datadog-synthetics/`. Generic P1/P2 JSON definitions plus a dependency-free `sync.js` script that consumers can copy into their own CI to keep synthetics in source control.
+
 ## 1.1.1
 
 ### Patch Changes
