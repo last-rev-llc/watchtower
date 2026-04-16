@@ -56,6 +56,21 @@ Simple configuration with only essential checks.
 - `healthcheck.config.ts` - Minimal configuration
 - `pages/api/healthcheck.ts` - API route
 
+### 5. Datadog Synthetics (`datadog-synthetics/`)
+Generic Datadog synthetic test definitions plus a reference sync script so you can keep synthetics in source control alongside your app.
+
+**Features:**
+- P1 Critical template — asserts `HTTP 200`, fires on full outage (HTTP 503)
+- P2 High template — asserts `$.status is "Up"`, fires on degraded service (`Partial`)
+- Dependency-free `sync.js` to create/update tests via Datadog API (Node 18+ built-in fetch)
+- Ready-to-copy GitHub Actions example for path-scoped auto-sync on push to main
+
+**Files:**
+- `healthcheck-p1.json` - P1 Critical synthetic definition
+- `healthcheck-p2.json` - P2 High synthetic definition
+- `sync.js` - Reference sync script (copy into your repo / CI)
+- `README.md` - First-time setup, placeholder substitution, CI integration guide
+
 ## Getting Started
 
 1. **Choose an example** that matches your setup
