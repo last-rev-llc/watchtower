@@ -186,9 +186,6 @@ export function generateTestPage(healthcheckEndpoint: string): string {
       border-radius: 8px;
       padding: 20px;
       border: 1px solid #e9ecef;
-    }
-
-    .result-container {
       position: relative;
     }
 
