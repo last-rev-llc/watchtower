@@ -39,8 +39,9 @@ Ready-to-use examples are available in the [`examples/`](./examples/) directory:
 - **[Next.js App Router](./examples/nextjs-app-router/)** - Modern Next.js 13+ App Router integration
 - **[Manual Configuration](./examples/manual-config/)** - Custom configuration without templates
 - **[Minimal Setup](./examples/minimal/)** - Simple configuration with essential checks only
+- **[Datadog Synthetics](./examples/datadog-synthetics/)** - Ready-to-import P1/P2 synthetic test definitions plus a reference sync script for keeping Datadog in source control
 
-See the [examples README](./examples/README.md) for detailed setup instructions.
+See the [examples README](./examples/README.md) for detailed setup instructions. For a deeper Datadog guide covering custom metrics, Terraform, and dashboards, see [`DATADOG_MONITORING.md`](./DATADOG_MONITORING.md).
 
 ## Quick Start
 
