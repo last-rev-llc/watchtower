@@ -35,9 +35,7 @@ const DD_SITE = process.env.DATADOG_SITE || 'datadoghq.com';
 const API_BASE = `https://api.${DD_SITE}/api/v1/synthetics/tests`;
 
 if (!DD_API_KEY || !DD_APP_KEY) {
-  console.error(
-    'ERROR: DATADOG_API_KEY and DATADOG_APP_KEY must be set in the environment.'
-  );
+  console.error('ERROR: DATADOG_API_KEY and DATADOG_APP_KEY must be set in the environment.');
   process.exit(1);
 }
 
