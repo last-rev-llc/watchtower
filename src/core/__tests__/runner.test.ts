@@ -101,7 +101,13 @@ describe('runHealthCheck — config.name override', () => {
         {
           id: 'ping',
           name: 'Ping',
-          run: async () => ({ id: 'ping', name: 'Ping', status: 'Up', message: 'ok', timestamp: Date.now() })
+          run: async () => ({
+            id: 'ping',
+            name: 'Ping',
+            status: 'Up',
+            message: 'ok',
+            timestamp: Date.now()
+          })
         }
       ],
       name: 'Diligent Marketing',
@@ -119,7 +125,13 @@ describe('runHealthCheck — config.name override', () => {
         {
           id: 'ping',
           name: 'Ping',
-          run: async () => ({ id: 'ping', name: 'Ping', status: 'Up', message: 'ok', timestamp: Date.now() })
+          run: async () => ({
+            id: 'ping',
+            name: 'Ping',
+            status: 'Up',
+            message: 'ok',
+            timestamp: Date.now()
+          })
         }
       ],
       name: 'My Cool Site',
@@ -137,7 +149,13 @@ describe('runHealthCheck — config.name override', () => {
         {
           id: 'ping',
           name: 'Ping',
-          run: async () => ({ id: 'ping', name: 'Ping', status: 'Up', message: 'ok', timestamp: Date.now() })
+          run: async () => ({
+            id: 'ping',
+            name: 'Ping',
+            status: 'Up',
+            message: 'ok',
+            timestamp: Date.now()
+          })
         }
       ],
       auth: { requireAuth: false }
