@@ -202,14 +202,16 @@ export function generateTestPage(healthcheckEndpoint: string): string {
 
     .copy-btn {
       position: absolute;
-      top: 10px;
-      right: 10px;
+      top: 30px;
+      right: 30px;
+      z-index: 1;
       background: rgba(255,255,255,0.1);
       color: #abb2bf;
       border: 1px solid rgba(255,255,255,0.2);
       border-radius: 4px;
       padding: 4px 10px;
       font-size: 12px;
+      line-height: 1.2;
       cursor: pointer;
       transition: background 0.15s, color 0.15s;
     }
@@ -217,6 +219,11 @@ export function generateTestPage(healthcheckEndpoint: string): string {
     .copy-btn:hover {
       background: rgba(255,255,255,0.2);
       color: #fff;
+    }
+
+    .copy-btn:focus-visible {
+      outline: 2px solid rgba(255,255,255,0.4);
+      outline-offset: 2px;
     }
 
     .info {
