@@ -78,9 +78,24 @@ async function syncFile(filePath) {
   const name = path.basename(filePath);
   const existingId = doc.public_id;
 
-  // public_id is metadata for the sync script, not part of the Datadog test spec.
-  // Strip it from the request body to avoid "unexpected field" errors.
-  const { public_id: _strip, ...body } = doc;
+  // Strip Datadog-generated metadata fields from the request body. These are
+  // returned by GET /tests/{id} but rejected by POST/PUT (Datadog responds with
+  // "Additional properties are not allowed"). `public_id` is our own local
+  // tracker for which Datadog test each JSON maps to.
+  const METADATA_FIELDS = [
+    'public_id',
+    'monitor_id',
+    'org_id',
+    'created_at',
+    'modified_at',
+    'created_by',
+    'modified_by',
+    'deleted_at',
+    'creator'
+  ];
+  const body = Object.fromEntries(
+    Object.entries(doc).filter(([k]) => !METADATA_FIELDS.includes(k))
+  );
 
   if (existingId) {
     const res = await fetch(`${API_BASE}/${existingId}`, {
