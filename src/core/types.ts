@@ -55,6 +55,24 @@ export interface Check {
  */
 export interface RunnerConfig {
   checks: Check[];
+  /**
+   * Display name for this healthcheck.
+   *
+   * When provided, overrides the dynamic name that would otherwise be derived
+   * (in order of precedence) from:
+   *   - the `?site=` query parameter,
+   *   - the `x-site-name` request header,
+   *   - the `SITE` or `DOMAIN` environment variables.
+   *
+   * Used as the `name` field in the HealthCheckResponse and to generate a
+   * deterministic `id` (non-alphanumeric characters collapse to `_`).
+   *
+   * @example
+   * name: 'Diligent Marketing'
+   * // → response.name = "Diligent Marketing Site Health"
+   * // → response.id   = "diligent_marketing_healthcheck"
+   */
+  name?: string;
   budgetMs?: number;
   cacheMs?: number;
   aggregationPrecedence?: Status[];

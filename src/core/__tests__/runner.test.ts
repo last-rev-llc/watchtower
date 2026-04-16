@@ -94,6 +94,132 @@ describe('runHealthCheck', () => {
   });
 });
 
+describe('runHealthCheck — config.name override', () => {
+  it('uses config.name to build response name and id', async () => {
+    const config: RunnerConfig = {
+      checks: [
+        {
+          id: 'ping',
+          name: 'Ping',
+          run: async () => ({
+            id: 'ping',
+            name: 'Ping',
+            status: 'Up',
+            message: 'ok',
+            timestamp: Date.now()
+          })
+        }
+      ],
+      name: 'Diligent Marketing',
+      auth: { requireAuth: false }
+    };
+
+    const result = await runHealthCheck(config);
+    expect(result.name).toBe('Diligent Marketing Site Health');
+    expect(result.id).toBe('diligent_marketing_healthcheck');
+  });
+
+  it('lowercases and underscores multi-word config.name into the id', async () => {
+    const config: RunnerConfig = {
+      checks: [
+        {
+          id: 'ping',
+          name: 'Ping',
+          run: async () => ({
+            id: 'ping',
+            name: 'Ping',
+            status: 'Up',
+            message: 'ok',
+            timestamp: Date.now()
+          })
+        }
+      ],
+      name: 'My Cool Site',
+      auth: { requireAuth: false }
+    };
+
+    const result = await runHealthCheck(config);
+    expect(result.name).toBe('My Cool Site Site Health');
+    expect(result.id).toBe('my_cool_site_healthcheck');
+  });
+
+  it('sanitises punctuation in config.name when building the id', async () => {
+    const config: RunnerConfig = {
+      checks: [
+        {
+          id: 'ping',
+          name: 'Ping',
+          run: async () => ({ id: 'ping', name: 'Ping', status: 'Up', message: 'ok', timestamp: Date.now() })
+        }
+      ],
+      name: 'ACME, Inc.',
+      auth: { requireAuth: false }
+    };
+
+    const result = await runHealthCheck(config);
+    expect(result.name).toBe('ACME, Inc. Site Health');
+    expect(result.id).toBe('acme_inc_healthcheck');
+  });
+
+  it('trims surrounding whitespace and normalises hyphens in the id', async () => {
+    const config: RunnerConfig = {
+      checks: [
+        {
+          id: 'ping',
+          name: 'Ping',
+          run: async () => ({ id: 'ping', name: 'Ping', status: 'Up', message: 'ok', timestamp: Date.now() })
+        }
+      ],
+      name: '  Foo-Bar  ',
+      auth: { requireAuth: false }
+    };
+
+    const result = await runHealthCheck(config);
+    expect(result.id).toBe('foo_bar_healthcheck');
+  });
+
+  it('falls back to a safe id when config.name has no alphanumeric characters', async () => {
+    const config: RunnerConfig = {
+      checks: [
+        {
+          id: 'ping',
+          name: 'Ping',
+          run: async () => ({ id: 'ping', name: 'Ping', status: 'Up', message: 'ok', timestamp: Date.now() })
+        }
+      ],
+      name: '---',
+      auth: { requireAuth: false }
+    };
+
+    const result = await runHealthCheck(config);
+    expect(result.id).toBe('site_healthcheck');
+  });
+
+  it('falls back to request-derived values when config.name is omitted', async () => {
+    const config: RunnerConfig = {
+      checks: [
+        {
+          id: 'ping',
+          name: 'Ping',
+          run: async () => ({
+            id: 'ping',
+            name: 'Ping',
+            status: 'Up',
+            message: 'ok',
+            timestamp: Date.now()
+          })
+        }
+      ],
+      auth: { requireAuth: false }
+    };
+
+    const result = await runHealthCheck(config);
+    expect(result.name).toBeTruthy();
+    expect(result.id).toBeTruthy();
+    expect(result.id).not.toContain(' ');
+  });
+});
+
 describe('withTimeout', () => {
   it('returns timeout value when promise exceeds timeout', async () => {
     vi.useFakeTimers();

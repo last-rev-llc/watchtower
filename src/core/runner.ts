@@ -98,10 +98,13 @@ export async function runHealthCheck(
   const overallStatus = aggregateStatus(services, aggregationPrecedence);
   const overallMessage = getStatusMessage(overallStatus);
 
-  // Build response
+  // Build response — use config.name override if provided, otherwise derive from request/env
+  const displayName = config.name ? `${config.name} Site Health` : getSiteDisplayName(req);
+  const id = config.name ? buildHealthcheckIdFromName(config.name) : getSiteHealthcheckId(req);
+
   const response: HealthCheckResponse = {
-    id: getSiteHealthcheckId(req),
-    name: getSiteDisplayName(req),
+    id,
+    name: displayName,
     status: overallStatus,
     message: overallMessage,
     timestamp: Date.now(),
@@ -149,6 +152,22 @@ async function runCheckWithTimeout(
       timestamp: Date.now()
     };
   }
+}
+
+/**
+ * Build a deterministic, URL/slug-safe healthcheck id from a user-provided name.
+ *
+ * Trims whitespace, lowercases, collapses any non-alphanumeric run into a single
+ * underscore, and strips leading/trailing underscores. Falls back to `site` if
+ * the input is empty or contains no slug-able characters.
+ */
+function buildHealthcheckIdFromName(name: string): string {
+  const slug = name
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '_')
+    .replace(/^_+|_+$/g, '');
+  return `${slug || 'site'}_healthcheck`;
 }
 
 /**
