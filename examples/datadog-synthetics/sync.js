@@ -78,15 +78,19 @@ async function syncFile(filePath) {
   const name = path.basename(filePath);
   const existingId = doc.public_id;
 
+  // public_id is metadata for the sync script, not part of the Datadog test spec.
+  // Strip it from the request body to avoid "unexpected field" errors.
+  const { public_id: _strip, ...body } = doc;
+
   if (existingId) {
     const res = await fetch(`${API_BASE}/${existingId}`, {
       method: 'PUT',
       headers,
-      body: JSON.stringify(doc)
+      body: JSON.stringify(body)
     });
     if (!res.ok) {
-      const body = await res.text();
-      throw new Error(`PUT ${existingId} failed (${res.status}): ${body}`);
+      const text = await res.text();
+      throw new Error(`PUT ${existingId} failed (${res.status}): ${text}`);
     }
     console.log(`  UPDATE  ${name}  (public_id: ${existingId})`);
     return { action: 'update', public_id: existingId };
@@ -95,7 +99,7 @@ async function syncFile(filePath) {
   const res = await fetch(API_BASE, {
     method: 'POST',
     headers,
-    body: JSON.stringify(doc)
+    body: JSON.stringify(body)
   });
   if (!res.ok) {
     const body = await res.text();
